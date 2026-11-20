@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CentraleFox — Télécharger Alarme-locale</title>
+<meta name="description" content="Téléchargez le serveur local de votre alarme Myfox en un clic, pour Raspberry Pi, PC Linux, Windows ou Mac.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M8 6l16 14h16L56 6v26L32 58 8 32z' fill='%23FF7A1A'/%3E%3Cpath d='M20 34l12 12 12-12-12 4z' fill='%23EEF2F7'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nuit:#10192E;      /* fond */
+  --ardoise:#1D2A45;   /* surfaces */
+  --ardoise-2:#273759; /* surfaces survolées */
+  --pelage:#FF7A1A;    /* action */
+  --pelage-fonce:#E0600A;
+  --veille:#5BE38A;    /* témoin "armé" */
+  --neige:#EEF2F7;     /* texte */
+  --brume:#93A3C0;     /* texte secondaire */
+  --display:"Bricolage Grotesque", "Trebuchet MS", sans-serif;
+  --texte:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(255,122,26,.16), transparent 60%),
+    radial-gradient(900px 500px at -10% 30%, rgba(91,227,138,.06), transparent 60%),
+    var(--nuit);
+  color:var(--neige);font:400 1.0625rem/1.6 var(--texte);
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--pelage);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* En-tête */
+header{padding:22px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo svg{width:40px;height:40px}
+.logo span{font:800 1.5rem/1 var(--display);letter-spacing:-.02em}
+.logo b{color:var(--pelage);font-weight:800}
+nav a{color:var(--brume);text-decoration:none;margin-left:22px;font-weight:700}
+nav a:hover{color:var(--neige)}
+
+/* Accroche */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;padding:56px 0 72px}
+.statut{display:inline-flex;align-items:center;gap:10px;color:var(--brume);font-size:.95rem;margin-bottom:22px}
+.led{width:10px;height:10px;border-radius:50%;background:var(--veille);box-shadow:0 0 0 0 rgba(91,227,138,.6);animation:veille 2.4s ease-out infinite}
+@keyframes veille{0%{box-shadow:0 0 0 0 rgba(91,227,138,.55)}70%{box-shadow:0 0 0 12px rgba(91,227,138,0)}100%{box-shadow:0 0 0 0 rgba(91,227,138,0)}}
+h1{font:800 clamp(2.5rem,5.6vw,4.4rem)/1.02 var(--display);letter-spacing:-.035em;margin-bottom:22px;max-width:13ch}
+.chapo{font-size:1.2rem;color:#C9D3E6;max-width:46ch;margin-bottom:34px}
+
+.carte-dl{background:var(--ardoise);border:1px solid rgba(238,242,247,.08);border-radius:22px;padding:26px;max-width:520px}
+.carte-dl p.detecte{color:var(--brume);font-size:.95rem;margin-bottom:6px}
+.carte-dl h2{font:700 1.45rem/1.2 var(--display);margin-bottom:18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;background:var(--pelage);color:#1A0E03;
+  font:700 1.15rem/1 var(--texte);text-decoration:none;padding:18px 26px;border-radius:14px;border:0;cursor:pointer;width:100%;
+  transition:background .15s, transform .15s}
+.btn:hover{background:#FF8C3A}
+.btn:active{transform:translateY(1px)}
+.btn svg{width:22px;height:22px;flex:none}
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;color:var(--brume);font-size:.9rem;margin-top:14px}
+.lien-autre{display:inline-block;margin-top:16px;color:var(--pelage);font-weight:700;text-decoration:none}
+.lien-autre:hover{text-decoration:underline}
+
+/* Illustration centrale */
+.centrale{position:relative;aspect-ratio:4/5;max-width:380px;justify-self:end;width:100%}
+.centrale svg{width:100%;height:100%;filter:drop-shadow(0 40px 60px rgba(0,0,0,.45))}
+
+/* Sélecteur */
+section{padding:72px 0}
+.titre-section{font:800 clamp(1.9rem,3.6vw,2.6rem)/1.08 var(--display);letter-spacing:-.025em;margin-bottom:12px}
+.intro{color:#C9D3E6;max-width:60ch;margin-bottom:36px}
+.appareils{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.appareil{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;background:transparent;color:var(--neige);
+  border:2px solid rgba(238,242,247,.12);border-radius:18px;padding:22px 22px 20px;cursor:pointer;font:inherit;
+  transition:border-color .15s, background .15s}
+.appareil:hover{background:rgba(238,242,247,.03);border-color:rgba(238,242,247,.28)}
+.appareil[aria-pressed="true"]{border-color:var(--pelage);background:rgba(255,122,26,.08)}
+.appareil .ico{width:44px;height:44px;margin-bottom:10px;color:var(--pelage)}
+.appareil strong{font:700 1.2rem/1.2 var(--display)}
+.appareil small{color:var(--brume);font-size:.93rem;line-height:1.45}
+.appareil .coche{position:absolute;top:18px;right:18px;width:24px;height:24px;border-radius:50%;background:var(--pelage);color:#1A0E03;
+  display:grid;place-items:center;opacity:0;transform:scale(.6);transition:.2s}
+.appareil[aria-pressed="true"] .coche{opacity:1;transform:none}
+.choix{margin-top:22px;display:flex;flex-wrap:wrap;align-items:center;gap:16px 28px;background:var(--ardoise);border-radius:18px;padding:20px 22px}
+.choix .btn{width:auto}
+.choix p{color:var(--brume);font-size:.95rem}
+.choix p strong{color:var(--neige)}
+
+/* Étapes */
+.etapes{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;counter-reset:e}
+.etape{border-top:2px solid rgba(238,242,247,.12);padding-top:22px}
+.etape::before{counter-increment:e;content:counter(e);display:grid;place-items:center;width:44px;height:44px;border-radius:50%;
+  background:var(--pelage);color:#1A0E03;font:800 1.25rem/1 var(--display);margin-bottom:18px}
+.etape h3{font:700 1.3rem/1.2 var(--display);margin-bottom:8px}
+.etape p{color:#C9D3E6}
+.os-tabs{display:flex;gap:8px;margin:28px 0 14px;flex-wrap:wrap}
+.os-tabs button{font:700 .95rem/1 var(--texte);color:var(--brume);background:transparent;border:2px solid rgba(238,242,247,.12);
+  padding:10px 16px;border-radius:999px;cursor:pointer}
+.os-tabs button[aria-selected="true"]{color:var(--neige);border-color:var(--neige)}
+.os-panel{background:var(--ardoise);border-radius:18px;padding:24px 26px;max-width:760px}
+.os-panel ol{padding-left:1.2em;display:grid;gap:8px}
+code{font:400 .95em/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:rgba(0,0,0,.3);padding:2px 7px;border-radius:6px;color:#FFD2AE}
+
+/* Jeedom */
+.jeedom{display:flex;gap:22px;align-items:flex-start;border:2px dashed rgba(91,227,138,.4);border-radius:22px;padding:26px 28px}
+.jeedom .led{margin-top:10px;flex:none}
+.jeedom h3{font:700 1.35rem/1.2 var(--display);margin-bottom:6px}
+.jeedom p{color:#C9D3E6;max-width:70ch}
+
+/* FAQ */
+.faq{max-width:780px}
+details{border-bottom:1px solid rgba(238,242,247,.12)}
+summary{list-style:none;cursor:pointer;padding:22px 40px 22px 0;font:700 1.15rem/1.3 var(--display);position:relative}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"";position:absolute;right:6px;top:50%;width:12px;height:12px;border-right:2.5px solid var(--pelage);border-bottom:2.5px solid var(--pelage);
+  transform:translateY(-70%) rotate(45deg);transition:transform .2s}
+details[open] summary::after{transform:translateY(-30%) rotate(-135deg)}
+details > div{padding:0 0 22px;color:#C9D3E6}
+details > div p + p{margin-top:10px}
+
+footer{padding:48px 0 56px;color:var(--brume);font-size:.92rem;border-top:1px solid rgba(238,242,247,.08);margin-top:40px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer a{color:var(--neige)}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;gap:32px;padding-top:28px}
+  .centrale{display:none}
+  .appareils{grid-template-columns:repeat(2,1fr)}
+  .etapes{grid-template-columns:1fr;gap:28px}
+}
+@media (max-width:560px){
+  .appareils{grid-template-columns:1fr}
+  nav a:first-child{display:none}
+  section{padding:52px 0}
+  .jeedom{flex-direction:column;gap:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="CentraleFox, accueil">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M8 6l16 14h16L56 6v26L32 58 8 32z" fill="#FF7A1A"/>
+        <path d="M8 6l16 14-6 10z M56 6L40 20l6 10z" fill="#E0600A"/>
+        <path d="M18 34l14 12 14-12-14 5z" fill="#EEF2F7"/>
+        <circle cx="23" cy="29" r="2.6" fill="#10192E"/><circle cx="41" cy="29" r="2.6" fill="#10192E"/>
+        <path d="M29 48h6l-3 4z" fill="#10192E"/>
+      </svg>
+      <span>Centrale<b>Fox</b></span>
+    </a>
+    <nav>
+      <a href="#appareils">Choisir mon appareil</a>
+      <a href="#aide">Aide</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <p class="statut"><span class="led" aria-hidden="true"></span><span id="statut-version">Alarme-locale v1.5.8 disponible</span></p>
+      <h1>Votre alarme Myfox, pilotée chez vous.</h1>
+      <p class="chapo">Alarme-locale fait tourner le serveur de votre centrale sur votre propre appareil, sans passer par Internet. Téléchargez le bon fichier en un clic, on s’occupe de reconnaître votre ordinateur.</p>
+
+      <div class="carte-dl" aria-live="polite">
+        <p class="detecte" id="detecte">Appareil détecté</p>
+        <h2 id="reco-nom">Windows</h2>
+        <a class="btn" id="reco-btn" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          <span id="reco-label">Télécharger pour Windows</span>
+        </a>
+        <div class="meta"><span id="reco-taille">12 Mo</span><span id="reco-fichier">myfox_local_server-windows-x86_64.exe</span></div>
+        <a class="lien-autre" href="#appareils">Ce n’est pas mon appareil</a>
+      </div>
+    </div>
+
+    <div class="centrale" aria-hidden="true">
+      <svg viewBox="0 0 320 400">
+        <defs>
+          <linearGradient id="boitier" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FC"/><stop offset="1" stop-color="#D5DCE8"/></linearGradient>
+          <linearGradient id="ecran" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D2A45"/><stop offset="1" stop-color="#10192E"/></linearGradient>
+          <radialGradient id="halo"><stop offset="0" stop-color="#5BE38A" stop-opacity=".55"/><stop offset="1" stop-color="#5BE38A" stop-opacity="0"/></radialGradient>
+        </defs>
+        <rect x="30" y="20" width="260" height="360" rx="48" fill="url(#boitier)"/>
+        <rect x="58" y="52" width="204" height="150" rx="22" fill="url(#ecran)"/>
+        <path d="M118 92l14 12h56l14-12v40l-42 40-42-40z" fill="#FF7A1A"/>
+        <path d="M138 140l22 18 22-18-22 7z" fill="#EEF2F7"/>
+        <circle cx="146" cy="124" r="4" fill="#10192E"/><circle cx="174" cy="124" r="4" fill="#10192E"/>
+        <circle cx="160" cy="250" r="44" fill="none" stroke="#C3CCDB" stroke-width="3"/>
+        <circle cx="160" cy="250" r="30" fill="#E6EBF3" stroke="#C3CCDB" stroke-width="2"/>
+        <circle cx="160" cy="250" r="34" fill="url(#halo)"><animate attributeName="r" values="22;40;22" dur="2.4s" repeatCount="indefinite"/></circle>
+        <circle cx="160" cy="250" r="9" fill="#5BE38A"/>
+        <rect x="110" y="330" width="100" height="8" rx="4" fill="#C3CCDB"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<section id="appareils">
+  <div class="wrap">
+    <h2 class="titre-section">Sur quoi allez-vous l’installer ?</h2>
+    <p class="intro">Touchez l’appareil qui fera tourner Alarme-locale. Pas besoin de connaître les noms techniques : on choisit le bon fichier pour vous.</p>
+
+    <div class="appareils" role="group" aria-label="Choix de l’appareil" id="grille"></div>
+
+    <div class="choix" aria-live="polite">
+      <a class="btn" id="choix-btn" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+        <span id="choix-label">Télécharger</span>
+      </a>
+      <p id="choix-info"></p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="jeedom">
+      <span class="led" aria-hidden="true"></span>
+      <div>
+        <h3>Vous utilisez Jeedom ? Rien à télécharger.</h3>
+        <p>Le plugin AlarmeMyfox installe Alarme-locale tout seul. Ouvrez le plugin dans Jeedom et cliquez sur <strong>Installer les dépendances</strong>. Ce site sert à ceux qui veulent l’installer à la main.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="installer">
+  <div class="wrap">
+    <h2 class="titre-section">Trois étapes, et c’est armé</h2>
+    <p class="intro">Le fichier est prêt à l’emploi : rien à installer à côté, aucun compte à créer.</p>
+    <div class="etapes">
+      <div class="etape"><h3>Téléchargez</h3><p>Choisissez votre appareil plus haut et récupérez le fichier. Il pèse environ 10 à 12 Mo.</p></div>
+      <div class="etape"><h3>Autorisez-le</h3><p>La première fois, votre ordinateur peut demander une confirmation. C’est normal pour un programme téléchargé.</p></div>
+      <div class="etape"><h3>Lancez-le</h3><p>Le serveur démarre et attend votre centrale. Laissez la fenêtre ouverte tant que vous voulez qu’il tourne.</p></div>
+    </div>
+
+    <div class="os-tabs" role="tablist" aria-label="Instructions par système">
+      <button role="tab" aria-selected="true" aria-controls="p-win" id="t-win">Windows</button>
+      <button role="tab" aria-selected="false" aria-controls="p-mac" id="t-mac">Mac</button>
+      <button role="tab" aria-selected="false" aria-controls="p-lin" id="t-lin">Raspberry Pi et Linux</button>
+    </div>
+    <div class="os-panel" role="tabpanel" id="p-win" aria-labelledby="t-win">
+      <ol>
+        <li>Ouvrez votre dossier <strong>Téléchargements</strong> et double-cliquez sur le fichier <code>.exe</code>.</li>
+        <li>Si une fenêtre bleue « Windows a protégé votre ordinateur » apparaît, cliquez sur <strong>Informations complémentaires</strong>, puis <strong>Exécuter quand même</strong>.</li>
+        <li>Une fenêtre noire s’ouvre : le serveur tourne. Ne la fermez pas.</li>
+      </ol>
+    </div>
+    <div class="os-panel" role="tabpanel" id="p-mac" aria-labelledby="t-mac" hidden>
+      <ol>
+        <li>Ouvrez le <strong>Terminal</strong> (Applications › Utilitaires) et tapez <code>chmod +x ~/Downloads/myfox_local_server-macos-*</code> puis Entrée.</li>
+        <li>Dans le Finder, faites un <strong>clic droit</strong> sur le fichier, puis <strong>Ouvrir</strong>, et confirmez.</li>
+        <li>Si le Mac refuse encore : Réglages Système › Confidentialité et sécurité › <strong>Ouvrir quand même</strong>.</li>
+      </ol>
+    </div>
+    <div class="os-panel" role="tabpanel" id="p-lin" aria-labelledby="t-lin" hidden>
+      <ol>
+        <li>Placez le fichier sur l’appareil (clé USB ou téléchargement direct).</li>
+        <li>Rendez-le exécutable : <code>chmod +x myfox_local_server-*</code></li>
+        <li>Lancez-le : <code>./myfox_local_server-aarch64</code> (avec le nom de votre fichier).</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section id="aide">
+  <div class="wrap">
+    <h2 class="titre-section">Questions fréquentes</h2>
+    <div class="faq">
+      <details>
+        <summary>Quel fichier pour mon Raspberry Pi ?</summary>
+        <div>
+          <p>Pour un Raspberry Pi 4 ou 5 avec un système récent, prenez <strong>Raspberry Pi 64 bits</strong>. Pour un Raspberry Pi plus ancien ou un système 32 bits, prenez <strong>Raspberry Pi 32 bits</strong>.</p>
+          <p>Pour en être sûr, tapez <code>uname -m</code> sur le Pi : <code>aarch64</code> veut dire 64 bits, <code>armv7l</code> veut dire 32 bits.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Comment savoir si mon Mac est « Apple » ou « Intel » ?</summary>
+        <div><p>Cliquez sur la pomme en haut à gauche de l’écran, puis <strong>À propos de ce Mac</strong>. Si vous lisez « Puce Apple M1 » (ou M2, M3, M4…), prenez <strong>Mac Apple</strong>. Si vous lisez « Processeur Intel », prenez <strong>Mac Intel</strong>.</p></div>
+      </details>
+      <details>
+        <summary>Mon ordinateur dit que le fichier est dangereux</summary>
+        <div><p>Windows et macOS affichent un avertissement pour tout programme qui ne vient pas de leur boutique. Suivez les instructions plus haut pour l’autoriser. Téléchargez toujours le fichier depuis ce site, jamais depuis un lien reçu par message.</p></div>
+      </details>
+      <details>
+        <summary>Le téléchargement ne démarre pas</summary>
+        <div><p>Essayez la page de toutes les versions, lien en bas de page. Si le problème continue, vérifiez votre connexion ou essayez un autre navigateur.</p></div>
+      </details>
+      <details>
+        <summary>Comment passer à une nouvelle version ?</summary>
+        <div><p>Revenez sur ce site : il affiche toujours la dernière version. Arrêtez l’ancien serveur, téléchargez le nouveau fichier et lancez-le à la place de l’ancien.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>CentraleFox · <span id="pied-version">Alarme-locale v1.5.8, publiée le 11 novembre 2026</span></span>
+    <a href="https://github.com/vegeta0911/Alarme-locale/releases" id="toutes">Toutes les versions</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var DEPOT = "vegeta0911/Alarme-locale";
+  var TAG = "latest";
+  var base = "https://github.com/" + DEPOT + "/releases/download/" + TAG + "/";
+
+  var ICO = {
+    pi:'<svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="6" y="12" width="36" height="24" rx="3"/><rect x="18" y="18" width="10" height="10" rx="1"/><path d="M10 8v4M16 8v4M22 8v4M28 8v4M34 8v4M42 20h3M42 28h3"/></svg>',
+    pc:'<svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="6" y="9" width="36" height="24" rx="3"/><path d="M18 39h12M24 33v6"/></svg>',
+    win:'<svg class="ico" viewBox="0 0 48 48" fill="currentColor"><path d="M7 11l14-2v14H7zM23 8.7L41 6v17H23zM7 25h14v14l-14-2zM23 25h18v17l-18-2.7z"/></svg>',
+    mac:'<svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="5" y="10" width="38" height="24" rx="3"/><path d="M2 38h44"/></svg>'
+  };
+
+  var APPAREILS = [
+    {id:"win",   nom:"Windows",              desc:"PC portable ou de bureau sous Windows 10 ou 11.", ico:"win", fichier:"myfox_local_server-windows-x86_64.exe", taille:12488824},
+    {id:"pi64",  nom:"Raspberry Pi 64 bits", desc:"Raspberry Pi 4, 5 ou 3 avec un système 64 bits. Le choix le plus courant.", ico:"pi", fichier:"myfox_local_server-aarch64", taille:12262520},
+    {id:"pi32",  nom:"Raspberry Pi 32 bits", desc:"Raspberry Pi plus ancien, ou système 32 bits.", ico:"pi", fichier:"myfox_local_server-armv7l", taille:11424672},
+    {id:"linux", nom:"PC ou box Linux",      desc:"Mini-PC, serveur, box Jeedom Atlas ou Smart, NAS sous Linux.", ico:"pc", fichier:"myfox_local_server-x86_64", taille:12546448},
+    {id:"macA",  nom:"Mac Apple",            desc:"Mac avec puce M1, M2, M3 ou plus récente (depuis fin 2020).", ico:"mac", fichier:"myfox_local_server-macos-arm64", taille:9682032},
+    {id:"macI",  nom:"Mac Intel",            desc:"Mac plus ancien avec processeur Intel.", ico:"mac", fichier:"myfox_local_server-macos-x86_64", taille:10417664}
+  ];
+
+  function mo(o){ return Math.round(o/1048576*10)/10 + " Mo"; }
+  function $(id){ return document.getElementById(id); }
+
+  // Détection de l'appareil
+  function detecter(){
+    var ua = (navigator.userAgent || "").toLowerCase();
+    var pf = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "").toLowerCase();
+    if (/win/.test(pf) || /windows/.test(ua)) return "win";
+    if (/mac/.test(pf) || /macintosh/.test(ua)) return "macA";
+    if (/aarch64|arm64/.test(ua + pf)) return "pi64";
+    if (/armv7|armv6|arm/.test(ua + pf)) return "pi32";
+    if (/linux/.test(pf + ua) && !/android/.test(ua)) return "linux";
+    return null;
+  }
+
+  var choisi = detecter() || "win";
+
+  // Grille des appareils
+  var grille = $("grille");
+  APPAREILS.forEach(function(a){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "appareil"; b.dataset.id = a.id;
+    b.setAttribute("aria-pressed", a.id === choisi ? "true" : "false");
+    b.innerHTML = ICO[a.ico] + '<strong>' + a.nom + '</strong><small>' + a.desc + '</small>' +
+      '<span class="coche" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span>';
+    b.addEventListener("click", function(){ choisir(a.id); });
+    grille.appendChild(b);
+  });
+
+  function trouver(id){ return APPAREILS.filter(function(a){ return a.id === id; })[0]; }
+
+  function choisir(id){
+    choisi = id;
+    var a = trouver(id);
+    [].forEach.call(grille.children, function(el){ el.setAttribute("aria-pressed", el.dataset.id === id ? "true" : "false"); });
+    $("choix-btn").href = base + a.fichier;
+    $("choix-label").textContent = "Télécharger pour " + a.nom;
+    $("choix-info").innerHTML = "<strong>" + mo(a.taille) + "</strong> · fichier <code>" + a.fichier + "</code>";
+  }
+
+  function remplirReco(){
+    var id = detecter();
+    var a = trouver(id || "win");
+    $("detecte").textContent = id ? "Appareil détecté" : "Choix proposé";
+    $("reco-nom").textContent = a.nom;
+    $("reco-btn").href = base + a.fichier;
+    $("reco-label").textContent = "Télécharger pour " + a.nom;
+    $("reco-taille").textContent = mo(a.taille);
+    $("reco-fichier").textContent = a.fichier;
+    if (id === "macA") $("detecte").textContent = "Mac détecté (vérifiez Apple ou Intel plus bas)";
+  }
+
+  remplirReco();
+  choisir(choisi);
+
+  // Onglets d'instructions
+  var tabs = document.querySelectorAll('[role="tab"]');
+  function ouvrir(t){
+    tabs.forEach(function(x){
+      var sel = x === t;
+      x.setAttribute("aria-selected", sel);
+      $(x.getAttribute("aria-controls")).hidden = !sel;
+    });
+  }
+  tabs.forEach(function(t){ t.addEventListener("click", function(){ ouvrir(t); }); });
+  var d = detecter();
+  if (d === "macA") ouvrir($("t-mac"));
+  else if (d && d !== "win") ouvrir($("t-lin"));
+
+  // Mise à jour automatique depuis GitHub (version, tailles)
+  fetch("https://api.github.com/repos/" + DEPOT + "/releases/tags/" + TAG, {headers:{Accept:"application/vnd.github+json"}})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(rel){
+      var m = (rel.name || rel.body || "").match(/v?(\d+\.\d+\.\d+)/);
+      var v = m ? "v" + m[1] : rel.tag_name;
+      var date = new Date(rel.published_at).toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"});
+      $("statut-version").textContent = "Alarme-locale " + v + " disponible";
+      $("pied-version").textContent = "Alarme-locale " + v + ", publiée le " + date;
+      (rel.assets || []).forEach(function(as){
+        APPAREILS.forEach(function(a){ if (a.fichier === as.name) a.taille = as.size; });
+      });
+      remplirReco(); choisir(choisi);
+    })
+    .catch(function(){ /* on garde les informations intégrées */ });
+})();
+</script>
+</body>
+</html>
