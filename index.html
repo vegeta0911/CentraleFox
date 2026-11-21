@@ -312,7 +312,7 @@ footer a{color:var(--neige)}
 
 <footer>
   <div class="wrap">
-    <span>CentraleFox · <span id="pied-version">Alarme-locale v1.5.8, publiée le 11 novembre 2026</span></span>
+    <span>CentraleFox · <span id="pied-version">CentraleFox v1.5.8, publiée le 11 novembre 2026</span></span>
     <a href="https://github.com/vegeta0911/Alarme-locale/releases" id="toutes">Toutes les versions</a>
   </div>
 </footer>
@@ -415,8 +415,8 @@ footer a{color:var(--neige)}
       var m = (rel.name || rel.body || "").match(/v?(\d+\.\d+\.\d+)/);
       var v = m ? "v" + m[1] : rel.tag_name;
       var date = new Date(rel.published_at).toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"});
-      $("statut-version").textContent = "Alarme-locale " + v + " disponible";
-      $("pied-version").textContent = "Alarme-locale " + v + ", publiée le " + date;
+      $("statut-version").textContent = "CentraleFox " + v + " disponible";
+      $("pied-version").textContent = "CentraleFox " + v + ", publiée le " + date;
       (rel.assets || []).forEach(function(as){
         APPAREILS.forEach(function(a){ if (a.fichier === as.name) a.taille = as.size; });
       });
