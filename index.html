@@ -415,7 +415,7 @@ footer a{color:var(--neige)}
       var m = (rel.name || rel.body || "").match(/v?(\d+\.\d+\.\d+)/);
       var v = m ? "v" + m[1] : rel.tag_name;
       var date = new Date(rel.published_at).toLocaleDateString("fr-FR", {day:"numeric", month:"long", year:"numeric"});
-      $("statut-version").textContent = "CentraleFox " + v + " disponible";
+      $("statut-version").textContent = " " + v + " disponible";
       $("pied-version").textContent = "CentraleFox " + v + ", publiée le " + date;
       (rel.assets || []).forEach(function(as){
         APPAREILS.forEach(function(a){ if (a.fichier === as.name) a.taille = as.size; });
