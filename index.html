@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CentraleFox</title>
 <meta name="description" content="Téléchargez le serveur local de votre alarme Myfox en un clic, pour Raspberry Pi, PC Linux, Windows ou Mac.">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CclipPath id='c'%3E%3Ccircle cx='32' cy='32' r='32'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='64' height='64' fill='%2310192E'/%3E%3Cpath d='M48 10c-8 0-15 4-19 10-7-2-15 2-18 9-4 9-1 20 7 26 7 5 17 5 24 0-6 1-13-1-17-6-4-5-4-12 0-17 4-5 11-7 17-5-3-4-2-9 2-12 3-2 5-3 3-5z' fill='%23FF7A1A'/%3E%3Cpath d='M21 26c5-4 13-3 17 2 3 4 4 10 8 14-5-1-10-4-13-9-3-5-8-7-12-7z' fill='%23EEF2F7'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="logo-renard.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
@@ -77,7 +77,38 @@ h1{font:800 clamp(2.5rem,5.6vw,4.4rem)/1.02 var(--display);letter-spacing:-.035e
 
 /* Illustration centrale */
 .centrale{position:relative;aspect-ratio:4/5;max-width:380px;justify-self:end;width:100%}
-.centrale svg{width:100%;height:100%;filter:drop-shadow(0 40px 60px rgba(0,0,0,.45))}
+.centrale-boitier{
+  width:100%;height:100%;border-radius:48px;
+  background:linear-gradient(180deg,#F7F9FC 0%,#D5DCE8 100%);
+  padding:32px 28px 26px;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  box-shadow:0 40px 60px rgba(0,0,0,.45);
+}
+.centrale-ecran{
+  width:100%;height:150px;border-radius:22px;
+  background:linear-gradient(135deg,#1D2A45 0%,#10192E 100%);
+  display:grid;place-items:center;
+}
+.centrale-ecran .logo-rond{
+  width:108px;height:108px;
+  border:2px solid rgba(238,242,247,.16);
+}
+.centrale-temoin{
+  position:relative;width:88px;height:88px;border-radius:50%;
+  border:3px solid #C3CCDB;display:grid;place-items:center;
+}
+.centrale-temoin::before{
+  content:"";width:60px;height:60px;border-radius:50%;
+  background:#E6EBF3;border:2px solid #C3CCDB;
+  box-shadow:0 0 28px rgba(91,227,138,.45);
+}
+.centrale-temoin::after{
+  content:"";position:absolute;width:18px;height:18px;border-radius:50%;
+  background:#5BE38A;
+}
+.centrale-barre{
+  width:100px;height:8px;border-radius:4px;background:#C3CCDB;
+}
 
 /* Sélecteur */
 section{padding:72px 0}
@@ -161,18 +192,7 @@ footer a{color:var(--neige)}
 <header>
   <div class="wrap">
     <a class="logo" href="#" aria-label="CentraleFox, accueil">
-      <svg class="logo-rond" viewBox="0 0 64 64" aria-hidden="true">
-        <defs>
-          <clipPath id="clip-header"><circle cx="32" cy="32" r="32"/></clipPath>
-        </defs>
-        <g clip-path="url(#clip-header)">
-          <rect width="64" height="64" fill="#18233C"/>
-          <path d="M51 9c-9 0-17 4-21 11-8-2-17 2-20 10-4 10-1 22 8 29 8 6 19 6 27 0-7 1-14-1-19-7-4-6-4-13 0-19 5-6 12-8 19-6-3-4-2-10 2-13 3-2 5-3 3-5z" fill="#FF6A00"/>
-          <path d="M20 27c6-4 15-3 19 2 4 5 5 11 9 16-6-1-11-4-15-10-3-5-8-8-13-8z" fill="#F4F6F9"/>
-          <path d="M43 22c2 1 3 3 2 5-1 1-3 1-4 0" fill="none" stroke="#18233C" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="48" cy="40" r="2.3" fill="#10192E"/>
-        </g>
-      </svg>
+      <img class="logo-rond" src="logo-renard.png" alt="" width="42" height="42">
       <span>Centrale<b>Fox</b></span>
     </a>
     <nav>
@@ -204,31 +224,13 @@ footer a{color:var(--neige)}
     </div>
 
     <div class="centrale" aria-hidden="true">
-      <svg viewBox="0 0 320 400">
-        <defs>
-          <linearGradient id="boitier" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F9FC"/><stop offset="1" stop-color="#D5DCE8"/></linearGradient>
-          <linearGradient id="ecran" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D2A45"/><stop offset="1" stop-color="#10192E"/></linearGradient>
-          <radialGradient id="halo"><stop offset="0" stop-color="#5BE38A" stop-opacity=".55"/><stop offset="1" stop-color="#5BE38A" stop-opacity="0"/></radialGradient>
-          <clipPath id="clip-ecran-logo">
-            <circle cx="160" cy="127" r="52"/>
-          </clipPath>
-        </defs>
-        <rect x="30" y="20" width="260" height="360" rx="48" fill="url(#boitier)"/>
-        <rect x="58" y="52" width="204" height="150" rx="22" fill="url(#ecran)"/>
-        <g clip-path="url(#clip-ecran-logo)">
-          <circle cx="160" cy="127" r="52" fill="#18233C"/>
-          <path d="M196 86c-13 0-25 6-31 16-12-3-25 3-30 15-6 15-2 33 12 43 12 9 29 9 41 0-11 2-21-1-28-11-6-9-6-20 0-29 7-9 18-12 29-9-5-6-3-15 3-20 5-3 7-5 4-7z" fill="#FF6A00"/>
-          <path d="M148 113c9-6 23-5 29 3 6 8 8 17 14 25-9-2-17-6-23-15-5-8-12-12-20-13z" fill="#F4F6F9"/>
-          <path d="M184 106c3 2 4 5 3 8-2 2-5 2-6 0" fill="none" stroke="#18233C" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="192" cy="133" r="3.5" fill="#10192E"/>
-        </g>
-        <circle cx="160" cy="127" r="52" fill="none" stroke="rgba(238,242,247,.16)" stroke-width="2"/>
-        <circle cx="160" cy="250" r="44" fill="none" stroke="#C3CCDB" stroke-width="3"/>
-        <circle cx="160" cy="250" r="30" fill="#E6EBF3" stroke="#C3CCDB" stroke-width="2"/>
-        <circle cx="160" cy="250" r="34" fill="url(#halo)"><animate attributeName="r" values="22;40;22" dur="2.4s" repeatCount="indefinite"/></circle>
-        <circle cx="160" cy="250" r="9" fill="#5BE38A"/>
-        <rect x="110" y="330" width="100" height="8" rx="4" fill="#C3CCDB"/>
-      </svg>
+      <div class="centrale-boitier">
+        <div class="centrale-ecran">
+          <img class="logo-rond" src="logo-renard.png" alt="" width="108" height="108">
+        </div>
+        <div class="centrale-temoin"></div>
+        <div class="centrale-barre"></div>
+      </div>
     </div>
   </div>
 </div>
